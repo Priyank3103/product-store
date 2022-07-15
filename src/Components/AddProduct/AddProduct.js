@@ -1,10 +1,25 @@
-import React, { useState } from "react";
-import { TextField, Button, Typography, Box, Select } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import Select from "react-select";
+import { TextField, Button, Typography, Box} from "@mui/material";
+import { v4 as uuid } from 'uuid';
 
-const AddProduct = () => {
-    function changeHandler(){
-        localStorage.setItem("state", state);
-        console.log(state);
+//const data = [{productname: '', category: '', price: '', qty: '', discount: '', gst: ''}];
+
+const AddProduct = (props) => {
+
+    const [state, setState] = useState({id: '', productname: '', category: '', price: '', qty: '', discount: '', gst: ''}, []);
+    const [id, setId] = useState("");
+    const [productname, setProductname] = useState("");
+    const [category, setCategory] = useState("");
+    const [price, setPrice] = useState("");
+    const [qty, setQty] = useState("");
+    const [discount, setDiscount] = useState("");
+    const [gst, setGst] = useState("");
+    
+    const changeHandler = (data) =>{
+        console.log(data);
+        localStorage.setItem("data", JSON.stringify(data));
+        //localStorage.setItem("productList", JSON.stringify(props.product));
     }
 
     const options = [
@@ -12,7 +27,27 @@ const AddProduct = () => {
         {value: "grossery", label: "Grossery"}
     ]
 
-    const [state, setState] = useState({productname: '', category: '', price: '', qty: '', discount: '', gst: ''}, []);
+    console.log(props.product.map((val) => {return val.productname}));
+
+    let button = "Add";
+
+    if(props.isEdit){
+        button = "Update";
+    }
+
+    // useEffect(() => {
+    //     setState(state => ({ ...state, productname: props.product.map((val) => {return val.productname}) }));
+    //   }, []);
+    const data = {
+        id: uuid(),
+        productname: productname,
+        category: category,
+        price: price,
+        qty: qty,
+        discount: discount,
+        gst: gst
+    }
+    console.log(data);
     return (
         <Box>
             <h1>Product Form</h1>
@@ -20,30 +55,32 @@ const AddProduct = () => {
                 <Typography>
                     Product Name:
                 </Typography><br />
-                <TextField type="text" required value={state.productname} onChange={(ev) => setState({...state, productname: ev.target.value})}/><br />
+                <TextField type="text" required value={props.isEdit ? props.product.map((val) => {return val.productname}) : productname} onChange={(ev) => setProductname(ev.target.value)}/><br />
                 
                 <Typography>
                     Select Category
                 </Typography><br />
-                <Select options={options} onChange={(ev) => setState({...state, category: ev.target.value})} />
+                <Select options={options} onChange={(ev) => setCategory(ev.value)} />
                 <br />
                 <Typography>
                     Price:
                 </Typography><br />
-                <TextField type="text" required value={state.price} onChange={(ev) => setState({...state, price: ev.target.value})}/><br />
+                <TextField type="text" required value={props.isEdit ? props.product.map((val) => {return val.price}) :price} onChange={(ev) => setPrice(ev.target.value)}/><br />
                 <Typography>
                     Qty:
                 </Typography><br />
-                <TextField type="text" required value={state.qty} onChange={(ev) => setState({...state, qty: ev.target.value})}/><br />
+                <TextField type="text" required value={props.isEdit ? props.product.map((val) => {return val.qty}) : qty} onChange={(ev) => setQty(ev.target.value)}/><br />
                 <Typography>
                     Discount(%):
                 </Typography><br />
-                <TextField type="text" required value={state.discount} onChange={(ev) => setState({...state, discount: ev.target.value})}/><br />
+                <TextField type="text" required value={props.isEdit ? props.product.map((val) => {return val.discount}) : discount} onChange={(ev) => setDiscount(ev.target.value)}/><br />
                 <Typography>
                     GST(%):
                 </Typography><br />
-                <TextField type="text" required value={state.gst} onChange={(ev) => setState({...state, gst: ev.target.value})}/><br />
-                <Button onClick={changeHandler}>Add</Button>
+                <TextField type="text" required value={props.isEdit ? props.product.map((val) => {return val.gst}) : gst} onChange={(ev) => setGst(ev.target.value)}/><br />
+                <Button onClick={() => {changeHandler(data)}}>
+                    {button}
+                </Button>
             </form>
         </Box>
     )
