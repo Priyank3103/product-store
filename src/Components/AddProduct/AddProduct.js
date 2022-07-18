@@ -41,8 +41,6 @@ const AddProduct = (props) => {
 
   if (props.product) {
     button = "Update";
-  } else {
-    button = "Add";
   }
 
   const data = {
