@@ -1,99 +1,125 @@
 import React, { useState, useEffect } from "react";
 import Select from "react-select";
-import { TextField, Button, Typography, Box} from "@mui/material";
-import { v4 as uuid } from 'uuid';
-
-//const data = [{productname: '', category: '', price: '', qty: '', discount: '', gst: ''}];
+import { TextField, Button, Typography, Box } from "@mui/material";
+import { v4 as uuid } from "uuid";
 
 const AddProduct = (props) => {
+  const [productName, setProductName] = useState("");
+  const [category, setCategory] = useState("");
+  const [price, setPrice] = useState("");
+  const [qty, setQty] = useState("");
+  const [discount, setDiscount] = useState("");
+  const [gst, setGst] = useState("");
+  const { product } = props;
 
-    const [id, setId] = useState("");
-    const [productName, setProductName] = useState("");
-    const [category, setCategory] = useState("");
-    const [price, setPrice] = useState("");
-    const [qty, setQty] = useState("");
-    const [discount, setDiscount] = useState("");
-    const [gst, setGst] = useState("");
-    const [productList, setProductList] = useState([]);
-    
-    const changeHandler = () =>{
-        debugger
-        const data = {
-            id: uuid(),
-            productName: productName,
-            category: category,
-            price: price,
-            qty: qty,
-            discount: discount,
-            gst: gst
-        }
-        const getItem = JSON.parse(localStorage.getItem("productList"));
-        let items;
-        if(getItem === null){
-            items = [data];
-        }
-        else{
-            items = [...getItem, data];
-        }
-        setProductList(items);
-        localStorage.setItem("productList", JSON.stringify(items));
-        console.log(items);
-        
-        //window.location.reload();
-        //localStorage.setItem("productList", JSON.stringify(props.product));
+  useEffect(() => {
+    if (props.product) {
+      setProductName(product.productName);
+      setCategory(product.category);
+      setPrice(product.price);
+      setQty(product.qty);
+      setDiscount(product.discount);
+      setGst(product.gst);
     }
-    
-    console.log(productList);
+  }, [product]);
 
-    const options = [
-        {value: "electronic", label: "Electronic"},
-        {value: "grossery", label: "Grossery"}
-    ]
+  const changeHandler = () => {
+    setProductName("");
+    setCategory("");
+    setPrice("");
+    setQty("");
+    setDiscount("");
+    setGst("");
+  };
 
-    //console.log(props.product.map((val) => {return val.productname}));
+  const options = [
+    { value: "electronic", label: "Electronic" },
+    { value: "grossery", label: "Grossery" },
+  ];
 
-    let button = "Add";
+  let button = "Add";
 
-    if(props.isEdit){
-        button = "Update";
-    }
+  if (props.product) {
+    button = "Update";
+  } else {
+    button = "Add";
+  }
 
-    return (
-        <Box>
-            <h1>Product Form</h1>
-            <form style={{display: "grid"}}>
-                <Typography>
-                    Product Name:
-                </Typography><br />
-                <TextField type="text" required value={props.isEdit ? props.product.map((val) => {return val.productname}) : productName} onChange={(ev) => setProductName(ev.target.value)}/><br />
-                
-                <Typography>
-                    Select Category
-                </Typography><br />
-                <Select options={options} onChange={(ev) => setCategory(ev.value)} />
-                <br />
-                <Typography>
-                    Price:
-                </Typography><br />
-                <TextField type="text" required value={props.isEdit ? props.product.map((val) => {return val.price}) :price} onChange={(ev) => setPrice(ev.target.value)}/><br />
-                <Typography>
-                    Qty:
-                </Typography><br />
-                <TextField type="text" required value={props.isEdit ? props.product.map((val) => {return val.qty}) : qty} onChange={(ev) => setQty(ev.target.value)}/><br />
-                <Typography>
-                    Discount(%):
-                </Typography><br />
-                <TextField type="text" required value={props.isEdit ? props.product.map((val) => {return val.discount}) : discount} onChange={(ev) => setDiscount(ev.target.value)}/><br />
-                <Typography>
-                    GST(%):
-                </Typography><br />
-                <TextField type="text" required value={props.isEdit ? props.product.map((val) => {return val.gst}) : gst} onChange={(ev) => setGst(ev.target.value)}/><br />
-                <Button onClick={() => {changeHandler()}}>
-                    {button}
-                </Button>
-            </form>
-        </Box>
-    )
-}
+  const data = {
+    id: uuid(),
+    productName: productName,
+    category: category,
+    price: price,
+    qty: qty,
+    discount: discount,
+    gst: gst,
+  };
+
+  return (
+    <Box>
+      <h1>Product Form</h1>
+      <form style={{ display: "grid" }}>
+        <Typography>Product Name:</Typography>
+        <br />
+        <TextField
+          type="text"
+          required
+          value={productName}
+          onChange={(ev) => setProductName(ev.target.value)}
+        />
+        <br />
+
+        <Typography>Select Category</Typography>
+        <br />
+        <Select options={options} onChange={(ev) => setCategory(ev.value)} />
+        <br />
+        <Typography>Price:</Typography>
+        <br />
+        <TextField
+          type="text"
+          required
+          value={price}
+          onChange={(ev) => setPrice(ev.target.value)}
+        />
+        <br />
+        <Typography>Qty:</Typography>
+        <br />
+        <TextField
+          type="text"
+          required
+          value={qty}
+          onChange={(ev) => setQty(ev.target.value)}
+        />
+        <br />
+        <Typography>Discount(%):</Typography>
+        <br />
+        <TextField
+          type="text"
+          required
+          value={discount}
+          onChange={(ev) => setDiscount(ev.target.value)}
+        />
+        <br />
+        <Typography>GST(%):</Typography>
+        <br />
+        <TextField
+          type="text"
+          required
+          value={gst}
+          onChange={(ev) => setGst(ev.target.value)}
+        />
+        <br />
+        <Button
+          onClick={() => {
+            product ? props.updateData(data, product.id) : props.getData(data);
+            changeHandler();
+          }}
+        >
+          {button}
+        </Button>
+      </form>
+    </Box>
+  );
+};
 
 export default AddProduct;

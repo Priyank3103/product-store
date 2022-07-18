@@ -2,57 +2,79 @@ import React, { useState, useEffect } from "react";
 import Sidebar from "../Sidebar/Sidebar.jsx";
 import AddProduct from "../AddProduct/AddProduct";
 import ProductList from "../ProductList/ProductList.jsx";
-import { Table, TableHead, TableCell, TableRow, TableBody } from "@mui/material";
 
 const AppLayout = (props) => {
+  const [product, setProduct] = useState();
+  const [productList, setProductList] = useState([]);
 
-    const [product, setProduct] = useState([]);
-    const item = [{ productname: '', category: '', price: '', qty: '', discount: '', gst: '' }];
-    const [productList, setproductList] = useState([]);
-    const [isEdit, setisEdit] = useState(false);
+  useEffect(() => {}, [productList]);
 
-    useEffect(() => {
-        //console.log(productList);
-        //localStorage.setItem("productList", JSON.stringify(productList));
-    }, [productList]);
-
-    function setData(data) {
-        //setproductList([...productList, data]);
-        localStorage.setItem("productList", JSON.stringify(data));
-        //window.location.reload();
-        //console.log(data);
+  const setData = (data) => {
+    const getItem = JSON.parse(localStorage.getItem("productList"));
+    let items;
+    if (getItem === null) {
+      items = [data];
+    } else {
+      items = [...getItem, data];
     }
+    setProductList(items);
+    localStorage.setItem("productList", JSON.stringify(items));
+  };
 
-    function deleteData(name) {
-        const data = productList.filter((product) => product.productname !== name);
-        setproductList(data);
-    }
-    
-    function editData(name) {
-        const data = productList.filter((product) => product.productname === name);
-        setProduct(data);
-        setisEdit(true);
-        console.log(data);
-    }
+  const deleteData = (id) => {
+    const items = JSON.parse(localStorage.getItem("productList"));
+    const data = items.filter((product) => product.id !== id);
+    setProductList(data);
+    localStorage.setItem("productList", JSON.stringify(data));
+  };
 
-    function updateProduct(data){
-        const product = productList.map((list) => list.productname === data.productname ? setProduct([...product, data]): list);
-        console.log(product);
-    }
+  const editData = (id) => {
+    const items = JSON.parse(localStorage.getItem("productList"));
+    const data = items.filter((product) => product.id === id)[0];
+    setProduct(data);
+  };
 
-    return (
-        <div style={{ display: "flex" }}>
-            <Sidebar />
-            <div>
-                <div style={{ width: "300px", paddingLeft: "20px" }}>
-                    <AddProduct product={product} isEdit={isEdit} getData={setData} updateData={updateProduct}/>
-                </div>
-            </div>
-            <div style={{ paddingLeft: "30px" }}>
-                <ProductList productList={productList} deleteHandler={deleteData} editHandler={editData}/>
-            </div>
+  const updateProduct = (data, id) => {
+    const items = JSON.parse(localStorage.getItem("productList"));
+    const item = items.map((product) =>
+      product.id === id
+        ? {
+            ...product,
+            productName: data.productName,
+            category: data.category,
+            price: data.price,
+            qty: data.qty,
+            discount: data.discount,
+            gst: data.gst,
+          }
+        : product
+    );
+    setProductList(item);
+    setProduct();
+    localStorage.setItem("productList", JSON.stringify(item));
+  };
+
+  return (
+    <div style={{ display: "flex" }}>
+      <Sidebar />
+      <div>
+        <div style={{ width: "300px", paddingLeft: "20px" }}>
+          <AddProduct
+            product={product}
+            getData={setData}
+            updateData={updateProduct}
+          />
         </div>
-    )
-}
+      </div>
+      <div style={{ paddingLeft: "30px" }}>
+        <ProductList
+          productList={productList}
+          deleteHandler={deleteData}
+          editHandler={editData}
+        />
+      </div>
+    </div>
+  );
+};
 
 export default AppLayout;
