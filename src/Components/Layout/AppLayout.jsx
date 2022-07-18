@@ -12,13 +12,15 @@ const AppLayout = (props) => {
     const [isEdit, setisEdit] = useState(false);
 
     useEffect(() => {
-        console.log(productList);
+        //console.log(productList);
         //localStorage.setItem("productList", JSON.stringify(productList));
     }, [productList]);
 
     function setData(data) {
-        setproductList([...productList, data]);
-        //localStorage.setItem("productList", JSON.stringify(productList));
+        //setproductList([...productList, data]);
+        localStorage.setItem("productList", JSON.stringify(data));
+        //window.location.reload();
+        //console.log(data);
     }
 
     function deleteData(name) {

@@ -7,27 +7,50 @@ import { v4 as uuid } from 'uuid';
 
 const AddProduct = (props) => {
 
-    const [state, setState] = useState({id: '', productname: '', category: '', price: '', qty: '', discount: '', gst: ''}, []);
     const [id, setId] = useState("");
-    const [productname, setProductname] = useState("");
+    const [productName, setProductName] = useState("");
     const [category, setCategory] = useState("");
     const [price, setPrice] = useState("");
     const [qty, setQty] = useState("");
     const [discount, setDiscount] = useState("");
     const [gst, setGst] = useState("");
+    const [productList, setProductList] = useState([]);
     
-    const changeHandler = (data) =>{
-        console.log(data);
-        localStorage.setItem("data", JSON.stringify(data));
+    const changeHandler = () =>{
+        debugger
+        const data = {
+            id: uuid(),
+            productName: productName,
+            category: category,
+            price: price,
+            qty: qty,
+            discount: discount,
+            gst: gst
+        }
+        const getItem = JSON.parse(localStorage.getItem("productList"));
+        let items;
+        if(getItem === null){
+            items = [data];
+        }
+        else{
+            items = [...getItem, data];
+        }
+        setProductList(items);
+        localStorage.setItem("productList", JSON.stringify(items));
+        console.log(items);
+        
+        //window.location.reload();
         //localStorage.setItem("productList", JSON.stringify(props.product));
     }
+    
+    console.log(productList);
 
     const options = [
         {value: "electronic", label: "Electronic"},
         {value: "grossery", label: "Grossery"}
     ]
 
-    console.log(props.product.map((val) => {return val.productname}));
+    //console.log(props.product.map((val) => {return val.productname}));
 
     let button = "Add";
 
@@ -35,19 +58,6 @@ const AddProduct = (props) => {
         button = "Update";
     }
 
-    // useEffect(() => {
-    //     setState(state => ({ ...state, productname: props.product.map((val) => {return val.productname}) }));
-    //   }, []);
-    const data = {
-        id: uuid(),
-        productname: productname,
-        category: category,
-        price: price,
-        qty: qty,
-        discount: discount,
-        gst: gst
-    }
-    console.log(data);
     return (
         <Box>
             <h1>Product Form</h1>
@@ -55,7 +65,7 @@ const AddProduct = (props) => {
                 <Typography>
                     Product Name:
                 </Typography><br />
-                <TextField type="text" required value={props.isEdit ? props.product.map((val) => {return val.productname}) : productname} onChange={(ev) => setProductname(ev.target.value)}/><br />
+                <TextField type="text" required value={props.isEdit ? props.product.map((val) => {return val.productname}) : productName} onChange={(ev) => setProductName(ev.target.value)}/><br />
                 
                 <Typography>
                     Select Category
@@ -78,7 +88,7 @@ const AddProduct = (props) => {
                     GST(%):
                 </Typography><br />
                 <TextField type="text" required value={props.isEdit ? props.product.map((val) => {return val.gst}) : gst} onChange={(ev) => setGst(ev.target.value)}/><br />
-                <Button onClick={() => {changeHandler(data)}}>
+                <Button onClick={() => {changeHandler()}}>
                     {button}
                 </Button>
             </form>

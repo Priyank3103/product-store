@@ -2,18 +2,17 @@ import React, { useState, useEffect } from "react";
 import { Table, TableHead, TableCell, TableRow, TableBody, Button } from "@mui/material";
 
 const ProductList = (props) => {
-
     //const data = JSON.parse(JSON.stringify(localStorage.getItem("data")));
     const [state, setState] = useState([]);
     const [product, setProduct] = useState([]);
 
-    useEffect(() => {
-        setProduct(props.productList);
-        const data = JSON.parse(JSON.stringify(localStorage.getItem("data")));
-        console.log(data);
-    }, []);
+    const data = JSON.parse(localStorage.getItem("productList"));
 
-    
+    useEffect(() => {
+        
+        console.log(data);
+        setProduct([data]);
+    }, [data]);
 
     function deleteHandler(name){
         const newArray = props.productList.filter((product) => product.productname !== name);
