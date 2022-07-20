@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
-import Select from "react-select";
-import { TextField, Button, Typography, Box } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import { v4 as uuid } from "uuid";
 
 const AddProduct = (props) => {
@@ -10,10 +16,10 @@ const AddProduct = (props) => {
   const [qty, setQty] = useState("");
   const [discount, setDiscount] = useState("");
   const [gst, setGst] = useState("");
-  const { product } = props;
+  const { product, updateData, addData } = props;
 
   useEffect(() => {
-    if (props.product) {
+    if (product) {
       setProductName(product.productName);
       setCategory(product.category);
       setPrice(product.price);
@@ -23,7 +29,7 @@ const AddProduct = (props) => {
     }
   }, [product]);
 
-  const changeHandler = () => {
+  const clearFields = () => {
     setProductName("");
     setCategory("");
     setPrice("");
@@ -31,15 +37,10 @@ const AddProduct = (props) => {
     setDiscount("");
     setGst("");
   };
-
-  const options = [
-    { value: "electronic", label: "Electronic" },
-    { value: "grossery", label: "Grossery" },
-  ];
-
+  
   let button = "Add";
 
-  if (props.product) {
+  if (product) {
     button = "Update";
   }
 
@@ -69,7 +70,12 @@ const AddProduct = (props) => {
 
         <Typography>Select Category</Typography>
         <br />
-        <Select options={options} onChange={(ev) => setCategory(ev.value)} />
+        <Select value={category} displayEmpty
+          inputProps={{ 'aria-label': 'Without label' }} onChange={(ev) => setCategory(ev.target.value)}>
+          <MenuItem value="">None</MenuItem>
+          <MenuItem value="electronic">Electronic</MenuItem>
+          <MenuItem value="grossery">Grossery</MenuItem>
+        </Select>
         <br />
         <Typography>Price:</Typography>
         <br />
@@ -109,8 +115,8 @@ const AddProduct = (props) => {
         <br />
         <Button
           onClick={() => {
-            product ? props.updateData(data, product.id) : props.getData(data);
-            changeHandler();
+            product ? updateData(data, product.id) : addData(data);
+            clearFields();
           }}
         >
           {button}

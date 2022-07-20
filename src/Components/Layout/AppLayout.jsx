@@ -9,7 +9,7 @@ const AppLayout = (props) => {
 
   useEffect(() => {}, [productList]);
 
-  const setData = (data) => {
+  const addProduct = (data) => {
     const getItem = JSON.parse(localStorage.getItem("productList"));
     let items;
     if (getItem === null) {
@@ -61,7 +61,7 @@ const AppLayout = (props) => {
         <div style={{ width: "300px", paddingLeft: "20px" }}>
           <AddProduct
             product={product}
-            getData={setData}
+            addData={addProduct}
             updateData={updateProduct}
           />
         </div>
