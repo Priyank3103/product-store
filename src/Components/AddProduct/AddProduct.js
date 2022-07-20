@@ -16,7 +16,8 @@ const AddProduct = (props) => {
   const [qty, setQty] = useState("");
   const [discount, setDiscount] = useState("");
   const [gst, setGst] = useState("");
-  const { product, updateData, addData } = props;
+  
+  const { product, updateData, addData, formErrors, isSubmit } = props;
 
   useEffect(() => {
     if (product) {
@@ -27,7 +28,11 @@ const AddProduct = (props) => {
       setDiscount(product.discount);
       setGst(product.gst);
     }
-  }, [product]);
+    if(isSubmit){
+      clearFields();
+    }
+
+  }, [product, isSubmit]);
 
   const clearFields = () => {
     setProductName("");
@@ -37,12 +42,8 @@ const AddProduct = (props) => {
     setDiscount("");
     setGst("");
   };
-  
-  let button = "Add";
 
-  if (product) {
-    button = "Update";
-  }
+  const buttonName = product ? "Update" : "Add";
 
   const data = {
     id: uuid(),
@@ -54,72 +55,86 @@ const AddProduct = (props) => {
     gst: gst,
   };
 
+  const productNameError = !isSubmit ? formErrors.productName : "";
+  const categoryError = !isSubmit ? formErrors.category : "";
+  const priceError = !isSubmit ? formErrors.price : "";
+  const qtyError = !isSubmit ? formErrors.productName : "";
+  const discountError = !isSubmit ? formErrors.discount : "";
+  const gstError = !isSubmit ? formErrors.gst : "";
+
   return (
     <Box>
-      <h1>Product Form</h1>
+      <h1 style={{textAlign: "center"}}>Product Form</h1>
       <form style={{ display: "grid" }}>
         <Typography>Product Name:</Typography>
-        <br />
         <TextField
           type="text"
           required
           value={productName}
           onChange={(ev) => setProductName(ev.target.value)}
+          size="small"
         />
-        <br />
+        <p style={{color: "red"}}>{productNameError}</p>
 
         <Typography>Select Category</Typography>
-        <br />
-        <Select value={category} displayEmpty
-          inputProps={{ 'aria-label': 'Without label' }} onChange={(ev) => setCategory(ev.target.value)}>
+        <Select
+          value={category}
+          displayEmpty
+          onChange={(ev) => setCategory(ev.target.value)}
+          size="small"
+        >
           <MenuItem value="">None</MenuItem>
           <MenuItem value="electronic">Electronic</MenuItem>
           <MenuItem value="grossery">Grossery</MenuItem>
         </Select>
-        <br />
+        <p style={{color: "red"}}>{categoryError}</p>
+        
         <Typography>Price:</Typography>
-        <br />
         <TextField
           type="text"
           required
           value={price}
           onChange={(ev) => setPrice(ev.target.value)}
+          size="small"
         />
-        <br />
+        <p style={{color: "red"}}>{priceError}</p>
+
         <Typography>Qty:</Typography>
-        <br />
         <TextField
           type="text"
           required
           value={qty}
           onChange={(ev) => setQty(ev.target.value)}
+          size="small"
         />
-        <br />
+        <p style={{color: "red"}}>{qtyError}</p>
+
         <Typography>Discount(%):</Typography>
-        <br />
         <TextField
           type="text"
           required
           value={discount}
           onChange={(ev) => setDiscount(ev.target.value)}
+          size="small"
         />
-        <br />
+        <p style={{color: "red"}}>{discountError}</p>
+
         <Typography>GST(%):</Typography>
-        <br />
         <TextField
           type="text"
           required
           value={gst}
           onChange={(ev) => setGst(ev.target.value)}
+          size="small"
         />
-        <br />
+        <p style={{color: "red"}}>{gstError}</p>
+
         <Button
           onClick={() => {
             product ? updateData(data, product.id) : addData(data);
-            clearFields();
           }}
         >
-          {button}
+          {buttonName}
         </Button>
       </form>
     </Box>
