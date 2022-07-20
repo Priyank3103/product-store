@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   TableHead,
@@ -7,73 +7,68 @@ import {
   TableBody,
   Button,
   TextField,
+  Select,
+  MenuItem
 } from "@mui/material";
-import Select from "react-select";
 
 const ProductDashboard = (props) => {
-  const options = [
-    { value: "electronic", label: "Electronic" },
-    { value: "grossery", label: "Grossery" },
-  ];
 
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("");
   const [check, setCheck] = useState(false);
+  const [products, setProducts] = useState([]);
 
   let items = JSON.parse(localStorage.getItem("productList"));
 
-  const filterData = (rows) => {
+  useEffect(() => {
+    setProducts(items);
     if ((filter === "electronic" || filter === "grossery") && search === "") {
       if (check === true) {
-        items = rows.filter(
+        setProducts(products =>  products.filter(
           (row) =>
             row.category.toLowerCase().indexOf(filter) > -1 && row.qty > 0
-        );
+        ));
       } else {
-        items = rows.filter(
+        setProducts(products => products.filter(
           (row) => row.category.toLowerCase().indexOf(filter) > -1
-        );
+        ));
       }
-      return items;
     } else if (filter === "" && search === "" && check === true) {
-      items = rows.filter((row) => row.qty > 0);
-      return items;
-    } else if (
+      setProducts(products => products.filter((row) => row.qty > 0));
+    } 
+    else if (
       (filter === "electronic" || filter === "grossery") &&
       search !== "" &&
       check === true
     ) {
-      items = rows.filter(
+      setProducts(products => products.filter(
         (row) =>
           row.productName.toLowerCase().indexOf(search) > -1 &&
           row.category.toLowerCase().indexOf(filter) > -1 &&
           row.qty > 0
-      );
-      return items;
+      ));
     } else if (
       (filter === "electronic" || filter === "grossery") &&
       search !== ""
     ) {
-      items = rows.filter(
+      setProducts(products => products.filter(
         (row) =>
           row.productName.toLowerCase().indexOf(search) > -1 &&
           row.category.toLowerCase().indexOf(filter) > -1
-      );
-      return items;
+      ));
     } else {
       if (check === true) {
-        items = rows.filter(
+        setProducts(products => products.filter(
           (row) =>
             row.productName.toLowerCase().indexOf(search) > -1 && row.qty > 0
-        );
+        ));
       } else {
-        items = rows.filter(
+        setProducts(products => products.filter(
           (row) => row.productName.toLowerCase().indexOf(search) > -1
-        );
+        ));
       }
-      return items;
     }
-  };
+  }, [search, filter, check])
 
   return (
     <div>
@@ -90,9 +85,15 @@ const ProductDashboard = (props) => {
           <TableRow>
             <TableCell>
               <Select
-                options={options}
-                onChange={(ev) => setFilter(ev.value)}
-              />
+                value={filter}
+                displayEmpty
+                inputProps={{ "aria-label": "Without label" }}
+                onChange={(ev) => setFilter(ev.target.value)}
+              >
+                <MenuItem value="">None</MenuItem>
+                <MenuItem value="electronic">Electronic</MenuItem>
+                <MenuItem value="grossery">Grossery</MenuItem>
+              </Select>
             </TableCell>
             <TableCell>
               <TextField
@@ -123,8 +124,8 @@ const ProductDashboard = (props) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {filterData &&
-            filterData(items).map((list, index) => {
+          {products &&
+            products.map((list, index) => {
               return (
                 <TableRow key={index}>
                   <TableCell>{list.productName}</TableCell>
