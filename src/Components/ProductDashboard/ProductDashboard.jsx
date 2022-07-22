@@ -8,7 +8,8 @@ import {
   Button,
   TextField,
   Select,
-  MenuItem
+  MenuItem,
+  Checkbox
 } from "@mui/material";
 
 const ProductDashboard = (props) => {
@@ -17,62 +18,37 @@ const ProductDashboard = (props) => {
   const [filter, setFilter] = useState("");
   const [check, setCheck] = useState(false);
   const [products, setProducts] = useState([]);
+  const [productData, setProductData] = useState([]); 
+  const {addToCart, removeFromCart, productList} = props; 
 
-  let items = JSON.parse(localStorage.getItem("productList"));
+  const items = JSON.parse(localStorage.getItem("productList"));
 
   useEffect(() => {
     setProducts(items);
-    if ((filter === "electronic" || filter === "grossery") && search === "") {
-      if (check === true) {
-        setProducts(products =>  products.filter(
-          (row) =>
-            row.category.toLowerCase().indexOf(filter) > -1 && row.qty > 0
-        ));
-      } else {
-        setProducts(products => products.filter(
-          (row) => row.category.toLowerCase().indexOf(filter) > -1
-        ));
-      }
-    } else if (filter === "" && search === "" && check === true) {
-      setProducts(products => products.filter((row) => row.qty > 0));
-    } 
-    else if (
-      (filter === "electronic" || filter === "grossery") &&
-      search !== "" &&
-      check === true
-    ) {
-      setProducts(products => products.filter(
-        (row) =>
-          row.productName.toLowerCase().indexOf(search) > -1 &&
-          row.category.toLowerCase().indexOf(filter) > -1 &&
-          row.qty > 0
-      ));
-    } else if (
-      (filter === "electronic" || filter === "grossery") &&
-      search !== ""
-    ) {
-      setProducts(products => products.filter(
-        (row) =>
-          row.productName.toLowerCase().indexOf(search) > -1 &&
-          row.category.toLowerCase().indexOf(filter) > -1
-      ));
-    } else {
-      if (check === true) {
-        setProducts(products => products.filter(
-          (row) =>
-            row.productName.toLowerCase().indexOf(search) > -1 && row.qty > 0
-        ));
-      } else {
-        setProducts(products => products.filter(
-          (row) => row.productName.toLowerCase().indexOf(search) > -1
-        ));
-      }
+    setProductData(productList);
+    if(filter !== ""){
+      setProducts(products =>  products.filter(
+              (row) =>
+                row.category.toLowerCase().indexOf(filter) > -1
+            ))
     }
-  }, [search, filter, check])
+    if(search !== ""){
+      setProducts(products =>  products.filter(
+        (row) =>
+          row.productName.toLowerCase().indexOf(search) > -1
+      ))
+    }
+    if(check === true){
+      setProducts(products =>  products.filter(
+        (row) =>
+        row.qty > 0
+      ))
+    }
+  }, [search, filter, check, productList])
 
   return (
     <div>
-      <h1>Product Dashboard</h1>
+      <h1 style={{textAlign: "center"}}>Product Dashboard</h1>
       <Table>
         <TableHead>
           <TableRow>
@@ -89,6 +65,7 @@ const ProductDashboard = (props) => {
                 displayEmpty
                 inputProps={{ "aria-label": "Without label" }}
                 onChange={(ev) => setFilter(ev.target.value)}
+                size="small"
               >
                 <MenuItem value="">None</MenuItem>
                 <MenuItem value="electronic">Electronic</MenuItem>
@@ -96,9 +73,9 @@ const ProductDashboard = (props) => {
               </Select>
             </TableCell>
             <TableCell>
-              <TextField
-                type="checkbox"
+              <Checkbox
                 onChange={(e) => setCheck(e.target.checked)}
+                size="small"
               />
             </TableCell>
             <TableCell>
@@ -106,6 +83,7 @@ const ProductDashboard = (props) => {
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
+                size="small"
               />
             </TableCell>
           </TableRow>
@@ -118,8 +96,6 @@ const ProductDashboard = (props) => {
             <TableCell>Category Name</TableCell>
             <TableCell>Price</TableCell>
             <TableCell>Qty</TableCell>
-            <TableCell>Discount(%)</TableCell>
-            <TableCell>GST(%)</TableCell>
             <TableCell>Options</TableCell>
           </TableRow>
         </TableHead>
@@ -132,10 +108,9 @@ const ProductDashboard = (props) => {
                   <TableCell>{list.category}</TableCell>
                   <TableCell>{list.price}</TableCell>
                   <TableCell>{list.qty}</TableCell>
-                  <TableCell>{list.discount}</TableCell>
-                  <TableCell>{list.gst}</TableCell>
                   <TableCell>
-                    <Button>Add to cart</Button>
+                    <Button disabled={list.qty === 0} onClick={() => addToCart(list)}>+</Button>
+                    <Button onClick={() => removeFromCart(list)}>-</Button>
                   </TableCell>
                 </TableRow>
               );
