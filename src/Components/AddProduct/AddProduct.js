@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
-import Select from "react-select";
-import { TextField, Button, Typography, Box } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import { v4 as uuid } from "uuid";
 
 const AddProduct = (props) => {
@@ -10,10 +16,11 @@ const AddProduct = (props) => {
   const [qty, setQty] = useState("");
   const [discount, setDiscount] = useState("");
   const [gst, setGst] = useState("");
-  const { product } = props;
+  
+  const { product, updateData, addData, formErrors, isSubmit } = props;
 
   useEffect(() => {
-    if (props.product) {
+    if (product) {
       setProductName(product.productName);
       setCategory(product.category);
       setPrice(product.price);
@@ -21,9 +28,13 @@ const AddProduct = (props) => {
       setDiscount(product.discount);
       setGst(product.gst);
     }
-  }, [product]);
+    if(isSubmit){
+      clearFields();
+    }
 
-  const changeHandler = () => {
+  }, [product, isSubmit]);
+
+  const clearFields = () => {
     setProductName("");
     setCategory("");
     setPrice("");
@@ -32,16 +43,7 @@ const AddProduct = (props) => {
     setGst("");
   };
 
-  const options = [
-    { value: "electronic", label: "Electronic" },
-    { value: "grossery", label: "Grossery" },
-  ];
-
-  let button = "Add";
-
-  if (props.product) {
-    button = "Update";
-  }
+  const buttonName = product ? "Update" : "Add";
 
   const data = {
     id: uuid(),
@@ -53,67 +55,86 @@ const AddProduct = (props) => {
     gst: gst,
   };
 
+  const productNameError = !isSubmit ? formErrors.productName : "";
+  const categoryError = !isSubmit ? formErrors.category : "";
+  const priceError = !isSubmit ? formErrors.price : "";
+  const qtyError = !isSubmit ? formErrors.productName : "";
+  const discountError = !isSubmit ? formErrors.discount : "";
+  const gstError = !isSubmit ? formErrors.gst : "";
+
   return (
     <Box>
-      <h1>Product Form</h1>
+      <h1 style={{textAlign: "center"}}>Product Form</h1>
       <form style={{ display: "grid" }}>
         <Typography>Product Name:</Typography>
-        <br />
         <TextField
           type="text"
           required
           value={productName}
           onChange={(ev) => setProductName(ev.target.value)}
+          size="small"
         />
-        <br />
+        <p style={{color: "red"}}>{productNameError}</p>
 
         <Typography>Select Category</Typography>
-        <br />
-        <Select options={options} onChange={(ev) => setCategory(ev.value)} />
-        <br />
+        <Select
+          value={category}
+          displayEmpty
+          onChange={(ev) => setCategory(ev.target.value)}
+          size="small"
+        >
+          <MenuItem value="">None</MenuItem>
+          <MenuItem value="electronic">Electronic</MenuItem>
+          <MenuItem value="grossery">Grossery</MenuItem>
+        </Select>
+        <p style={{color: "red"}}>{categoryError}</p>
+        
         <Typography>Price:</Typography>
-        <br />
         <TextField
           type="text"
           required
           value={price}
           onChange={(ev) => setPrice(ev.target.value)}
+          size="small"
         />
-        <br />
+        <p style={{color: "red"}}>{priceError}</p>
+
         <Typography>Qty:</Typography>
-        <br />
         <TextField
           type="text"
           required
           value={qty}
           onChange={(ev) => setQty(ev.target.value)}
+          size="small"
         />
-        <br />
+        <p style={{color: "red"}}>{qtyError}</p>
+
         <Typography>Discount(%):</Typography>
-        <br />
         <TextField
           type="text"
           required
           value={discount}
           onChange={(ev) => setDiscount(ev.target.value)}
+          size="small"
         />
-        <br />
+        <p style={{color: "red"}}>{discountError}</p>
+
         <Typography>GST(%):</Typography>
-        <br />
         <TextField
           type="text"
           required
           value={gst}
           onChange={(ev) => setGst(ev.target.value)}
+          size="small"
         />
-        <br />
+        <p style={{color: "red"}}>{gstError}</p>
+
         <Button
           onClick={() => {
-            product ? props.updateData(data, product.id) : props.getData(data);
-            changeHandler();
+            product ? updateData(data, product.id) : addData(data);
           }}
         >
-          {button}
+          {buttonName}
         </Button>
       </form>
     </Box>
