@@ -6,11 +6,14 @@ import {
   TableRow,
   TableBody,
   Button,
+  TablePagination,
 } from "@mui/material";
 
 const ProductList = (props) => {
   const [product, setProduct] = useState([]);
-  const { productList } = props;
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const { productList, editHandler, deleteHandler } = props;
 
   const data = JSON.parse(localStorage.getItem("productList"));
 
@@ -18,9 +21,21 @@ const ProductList = (props) => {
     setProduct(productList);
   }, [product]);
 
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const emptyRows =
+    rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
+
   return (
     <div>
-      <h1>Product List</h1>
+      <h1 style={{textAlign: "center"}}>Product List</h1>
       <div>
         <Table>
           <TableHead>
@@ -36,28 +51,44 @@ const ProductList = (props) => {
           </TableHead>
           <TableBody>
             {data &&
-              data.map((list, index) => {
-                return (
-                  <TableRow key={index}>
-                    <TableCell>{list.productName}</TableCell>
-                    <TableCell>{list.category}</TableCell>
-                    <TableCell>{list.price}</TableCell>
-                    <TableCell>{list.qty}</TableCell>
-                    <TableCell>{list.discount}</TableCell>
-                    <TableCell>{list.gst}</TableCell>
-                    <TableCell>
-                      <Button onClick={() => props.editHandler(list.id)}>
-                        Edit
-                      </Button>
-                      <Button onClick={() => props.deleteHandler(list.id)}>
-                        Delete
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+              data
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .map((list, index) => {
+                  return (
+                    <TableRow key={index}>
+                      <TableCell>{list.productName}</TableCell>
+                      <TableCell>{list.category}</TableCell>
+                      <TableCell>{list.price}</TableCell>
+                      <TableCell>{list.qty}</TableCell>
+                      <TableCell>{list.discount}</TableCell>
+                      <TableCell>{list.gst}</TableCell>
+                      <TableCell>
+                        <Button onClick={() => editHandler(list.id)}>
+                          Edit
+                        </Button>
+                        <Button onClick={() => deleteHandler(list.id)}>
+                          Delete
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+            {emptyRows > 0 && (
+              <TableRow style={{ height: 53 * emptyRows }}>
+                <TableCell colSpan={6} />
+              </TableRow>
+            )}
           </TableBody>
         </Table>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={data.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </div>
     </div>
   );
