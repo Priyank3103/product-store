@@ -1,56 +1,33 @@
 import React from "react";
+import {useNavigate, useLocation} from "react-router-dom"
 import "../Sidebar/Sidebar.scss";
 import { Navigation } from "react-minimal-side-navigation";
 import "react-minimal-side-navigation/lib/ReactMinimalSideNavigation.css";
 
-// const sidebarNavItems = [
-//     {
-//         display: "Dashboard",
-//         icon: <i className="bx bx-home"></i>,
-//         to: '/',
-//         section: ''
-//     },
-//     {
-//         display: "Categories",
-//         icon: <i className="bx bx-home"></i>,
-//         to: '/',
-//         section: ''
-//     },
-//     {
-//         display: "Product",
-//         icon: <i className="bx bx-home"></i>,
-//         to: '/',
-//         section: ''
-//     },
-//     {
-//         display: "Overview",
-//         icon: <i className="bx bx-home"></i>,
-//         to: '/',
-//         section: ''
-//     }
-// ]
-
 const Sidebar = () => {
+
+  const navigateTo = useNavigate();
+  const location = useLocation();
+
   return (
     <div className="sidebar" style={{ width: "400px" }}>
       <Navigation
+        activeItemId={location.pathname}
         onSelect={({ itemId }) => {
-          // maybe push to the route
+          navigateTo(itemId);
         }}
         items={[
           {
             title: "Dashboard",
             itemId: "/dashboard",
-            // you can use your own custom Icon component as well
-            // icon is optional
           },
           {
             title: "Categories",
-            itemId: "/management",
+            itemId: "/categories",
           },
           {
             title: "Product",
-            itemId: "/another",
+            itemId: "/",
           },
           {
             title: "Overview",
