@@ -30,8 +30,8 @@ const ProductList = (props) => {
     setPage(0);
   };
 
-  const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
+  const emptyRows = data ?
+    rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage) : null;
 
   return (
     <div>
@@ -63,7 +63,7 @@ const ProductList = (props) => {
                       <TableCell>{list.discount}</TableCell>
                       <TableCell>{list.gst}</TableCell>
                       <TableCell>
-                        <Button onClick={() => editHandler(list.id)}>
+                        <Button onClick={() => editHandler(list)}>
                           Edit
                         </Button>
                         <Button onClick={() => deleteHandler(list.id)}>
@@ -83,7 +83,7 @@ const ProductList = (props) => {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={data.length}
+          count={data ? data.length: 0}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}

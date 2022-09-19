@@ -109,7 +109,7 @@ const ProductDashboard = (props) => {
                   <TableCell>{list.price}</TableCell>
                   <TableCell>{list.qty}</TableCell>
                   <TableCell>
-                    <Button disabled={list.qty === 0} onClick={() => addToCart(list)}>+</Button>
+                    <Button data-testid='addToCartBtn' disabled={list.qty === 0} onClick={() => addToCart(list)}>+</Button>
                     <Button onClick={() => removeFromCart(list)}>-</Button>
                   </TableCell>
                 </TableRow>

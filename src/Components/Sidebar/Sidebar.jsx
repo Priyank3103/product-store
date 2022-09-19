@@ -1,6 +1,5 @@
 import React from "react";
 import {useNavigate, useLocation} from "react-router-dom"
-import "../Sidebar/Sidebar.scss";
 import { Navigation } from "react-minimal-side-navigation";
 import "react-minimal-side-navigation/lib/ReactMinimalSideNavigation.css";
 

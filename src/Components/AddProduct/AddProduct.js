@@ -7,136 +7,206 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
+import { Formik, Form, Field, ErrorMessage } from "formik";
 import { v4 as uuid } from "uuid";
+import * as Yup from "yup";
+
+const initialValues = {
+  id: uuid(),
+  productName: "",
+  category: "",
+  price: "",
+  qty: "",
+  discount: "",
+  gst: "",
+};
+
+const validationSchema = Yup.object({
+  productName: Yup.string().required("Required"),
+  category: Yup.string().required("Required"),
+  price: Yup.string().required("Required"),
+  qty: Yup.string().required("Required"),
+  discount: Yup.string().required("Required"),
+  gst: Yup.string().required("Required"),
+});
 
 const AddProduct = (props) => {
-  const [productName, setProductName] = useState("");
-  const [category, setCategory] = useState("");
-  const [price, setPrice] = useState("");
-  const [qty, setQty] = useState("");
-  const [discount, setDiscount] = useState("");
-  const [gst, setGst] = useState("");
-  
-  const { product, updateData, addData, formErrors, isSubmit } = props;
+  const [formValues, setFormValues] = useState(null);
+
+  const { product, updateData, addData } = props;
+
+  const onSubmit = (values) => {
+    //product ? updateData(values, values.id) : addData(values); 
+    if(product){
+      updateData(values)
+    }
+    else{
+      addData(values)
+    }
+  };
 
   useEffect(() => {
     if (product) {
-      setProductName(product.productName);
-      setCategory(product.category);
-      setPrice(product.price);
-      setQty(product.qty);
-      setDiscount(product.discount);
-      setGst(product.gst);
+      setFormValues(product);
     }
-    if(isSubmit){
-      clearFields();
-    }
-
-  }, [product, isSubmit]);
-
-  const clearFields = () => {
-    setProductName("");
-    setCategory("");
-    setPrice("");
-    setQty("");
-    setDiscount("");
-    setGst("");
-  };
+  }, [product]);
 
   const buttonName = product ? "Update" : "Add";
 
-  const data = {
-    id: uuid(),
-    productName: productName,
-    category: category,
-    price: price,
-    qty: qty,
-    discount: discount,
-    gst: gst,
-  };
-
-  const productNameError = !isSubmit ? formErrors.productName : "";
-  const categoryError = !isSubmit ? formErrors.category : "";
-  const priceError = !isSubmit ? formErrors.price : "";
-  const qtyError = !isSubmit ? formErrors.productName : "";
-  const discountError = !isSubmit ? formErrors.discount : "";
-  const gstError = !isSubmit ? formErrors.gst : "";
-
   return (
     <Box>
-      <h1 style={{textAlign: "center"}}>Product Form</h1>
-      <form style={{ display: "grid" }}>
-        <Typography>Product Name:</Typography>
-        <TextField
-          type="text"
-          required
-          value={productName}
-          onChange={(ev) => setProductName(ev.target.value)}
-          size="small"
-        />
-        <p style={{color: "red"}}>{productNameError}</p>
+      <h1 style={{ textAlign: "center" }}>Product Form</h1>
+      <Formik
+        initialValues={formValues || initialValues}
+        validationSchema={validationSchema}
+        onSubmit={onSubmit}
+        enableReinitialize
+      >
+        <Form style={{ display: "grid" }}>
+          <Typography>Product Name:</Typography>
+          <Field name="productName">
+            {(props) => {
+              const { field, form, meta } = props;
+              return (
+                <div>
+                  <TextField
+                    placeholder="productName"
+                    type="text"
+                    required
+                    size="small"
+                    {...field}
+                  />
+                  {meta.touched && meta.error ? (
+                    <div style={{ color: "red" }}>{meta.error}</div>
+                  ) : null}
+                </div>
+              );
+            }}
+          </Field>
 
-        <Typography>Select Category</Typography>
-        <Select
-          value={category}
-          displayEmpty
-          onChange={(ev) => setCategory(ev.target.value)}
-          size="small"
-        >
-          <MenuItem value="">None</MenuItem>
-          <MenuItem value="electronic">Electronic</MenuItem>
-          <MenuItem value="grossery">Grossery</MenuItem>
-        </Select>
-        <p style={{color: "red"}}>{categoryError}</p>
-        
-        <Typography>Price:</Typography>
-        <TextField
-          type="text"
-          required
-          value={price}
-          onChange={(ev) => setPrice(ev.target.value)}
-          size="small"
-        />
-        <p style={{color: "red"}}>{priceError}</p>
+          <Typography>Select Category</Typography>
+          <Field name="category">
+            {(props) => {
+              const { field, form, meta } = props;
+              return (
+                <div>
+                  <Select
+                    displayEmpty
+                    size="small"
+                    name="category"
+                    {...field}
+                  >
+                    <MenuItem value="">None</MenuItem>
+                    <MenuItem value="electronic">Electronic</MenuItem>
+                    <MenuItem value="grossery">Grossery</MenuItem>
+                  </Select>
+                  {meta.touched && meta.error ? (
+                    <div style={{ color: "red" }}>{meta.error}</div>
+                  ) : null}
+                </div>
+              );
+            }}
+          </Field>
 
-        <Typography>Qty:</Typography>
-        <TextField
-          type="text"
-          required
-          value={qty}
-          onChange={(ev) => setQty(ev.target.value)}
-          size="small"
-        />
-        <p style={{color: "red"}}>{qtyError}</p>
+          <Typography>Price:</Typography>
+          <Field
+            placeholder="price"
+            type="text"
+            required
+            size="small"
+            name="price"
+          >
+            {(props) => {
+              const { field, form, meta } = props;
+              return (
+                <div>
+                  <TextField
+                    placeholder="price"
+                    type="text"
+                    required
+                    size="small"
+                    {...field}
+                  />
+                  {meta.touched && meta.error ? (
+                    <div style={{ color: "red" }}>{meta.error}</div>
+                  ) : null}
+                </div>
+              );
+            }}
+          </Field>
 
-        <Typography>Discount(%):</Typography>
-        <TextField
-          type="text"
-          required
-          value={discount}
-          onChange={(ev) => setDiscount(ev.target.value)}
-          size="small"
-        />
-        <p style={{color: "red"}}>{discountError}</p>
+          <Typography>Qty:</Typography>
+          <Field placeholder="qty" type="text" required size="small" name="qty">
+            {(props) => {
+              const { field, form, meta } = props;
+              return (
+                <div>
+                  <TextField
+                    placeholder="qty"
+                    type="text"
+                    required
+                    size="small"
+                    {...field}
+                  />
+                  {meta.touched && meta.error ? (
+                    <div style={{ color: "red" }}>{meta.error}</div>
+                  ) : null}
+                </div>
+              );
+            }}
+          </Field>
 
-        <Typography>GST(%):</Typography>
-        <TextField
-          type="text"
-          required
-          value={gst}
-          onChange={(ev) => setGst(ev.target.value)}
-          size="small"
-        />
-        <p style={{color: "red"}}>{gstError}</p>
+          <Typography>Discount(%):</Typography>
+          <Field
+            placeholder="discount"
+            type="text"
+            required
+            size="small"
+            name="discount"
+          >
+            {(props) => {
+              const { field, form, meta } = props;
+              return (
+                <div>
+                  <TextField
+                    placeholder="document"
+                    type="text"
+                    required
+                    size="small"
+                    {...field}
+                  />
+                  {meta.touched && meta.error ? (
+                    <div style={{ color: "red" }}>{meta.error}</div>
+                  ) : null}
+                </div>
+              );
+            }}
+          </Field>
 
-        <Button
-          onClick={() => {
-            product ? updateData(data, product.id) : addData(data);
-          }}
-        >
-          {buttonName}
-        </Button>
-      </form>
+          <Typography>GST(%):</Typography>
+          <Field placeholder="gst" type="text" required size="small" name="gst">
+            {(props) => {
+              const { field, form, meta } = props;
+              return (
+                <div>
+                  <TextField
+                    placeholder="gst"
+                    type="text"
+                    required
+                    size="small"
+                    {...field}
+                  />
+                  {meta.touched && meta.error ? (
+                    <div style={{ color: "red" }}>{meta.error}</div>
+                  ) : null}
+                </div>
+              );
+            }}
+          </Field>
+
+          <Button type="submit">{buttonName}</Button>
+        </Form>
+      </Formik>
     </Box>
   );
 };
